@@ -1,0 +1,32 @@
+{
+  "name": "hubot-slack-enhance",
+  "version": "0.0.1",
+  "description": "Add functions for hubot-slack",
+  "main": "./index",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "true"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/iqeiq/hubot-slack-enhance.git"
+  },
+  "keywords": [
+    "hubot",
+    "slack"
+  ],
+  "author": "iqeiq",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/iqeiq/hubot-slack-enhance/issues"
+  },
+  "homepage": "https://github.com/iqeiq/hubot-slack-enhance#readme",
+  "devDependencies": {
+    "coffee-script": "^1.12.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.3"
+  }
+}
