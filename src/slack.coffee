@@ -1,8 +1,8 @@
 {EventEmitter} = require 'events'
 {inspect} = require 'util'
 _ = require 'lodash'
-request = require 'request'
 SlackBot = require.main.require 'hubot-slack/src/bot'
+{WebClient} = require '@slack/client'
 
 class Slack extends EventEmitter
   constructor: (@robot, options={})->
@@ -10,6 +10,7 @@ class Slack extends EventEmitter
     @actionListener = {}
     @listen()
     @web = @robot.adapter.client.web
+    @web2 = WebClient process.env.HUBOT_SLACK_APPS_TOKEN
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
@@ -134,26 +135,16 @@ class Slack extends EventEmitter
       timestamp: ts
       channel: room
 
-  post: (method, param, cb)->
-    options =
-      from: param
-    options.from.token = process.env.HUBOT_SLACK_APPS_TOKEN
-    request.post "https://slack.com/api/#{method}", options, (err, res, body)=>
-      return @robot.logger.error "#{inspect err, depth: null}" if err
-      return @robot.logger.error "#{inspect res, depth: null}" if res.statusCode != 200
-      @robot.logger.info "#{inspect body, depth: null}"
-      cb body.ok, body
-
   getMessageFromTimestamp: (channel, ts, cb)->
     options =
-      channel: channel
       latest: ts
       oldest: ts
       inclusive: 1
       count: 1
-    @post 'channels.history', options, (err, res)=>
+    @web2.channels.history channel, options, (err, res)=>
+      @robot.logger.info "#{inspect res, depth: null}"
       if err
-        @robot.logger.error "#{inspect res, depth: null}"
+        @robot.logger.error "#{inspect err, depth: null}"
         return cb err, null
       msg = res.message[0]
       msg.userName = @robot.adapter.client.rtm.dataStore.getUserById msg.user
