@@ -136,7 +136,7 @@ class Slack extends EventEmitter
 
   post: (method, param, cb)->
     options =
-      form: param
+      from: param
     options.from.token = process.env.HUBOT_SLACK_APPS_TOKEN
     request.post "https://slack.com/api/#{method}", options, (err, res, body)=>
       return @robot.logger.error "#{inspect err, depth: null}" if err
@@ -144,7 +144,7 @@ class Slack extends EventEmitter
       cb body.ok, body
 
   getMessageFromTimestamp: (channel, ts, cb)->
-    options = 
+    options =
       channel: channel
       latest: ts
       oldest: ts
