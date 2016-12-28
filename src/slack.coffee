@@ -151,8 +151,11 @@ class Slack extends EventEmitter
       inclusive: 1
       count: 1
     @post 'channels.history', options, (err, res)->
-      return cb err, null if err
+      if err
+        @robot.logger.error "#{inspect res, depth: null}"
+        return cb err, null
       msg = res.message[0]
+      msg.userName = @robot.adapter.client.rtm.dataStore.getUserById msg.user
       cb null, msg
 
 module.exports = Slack
