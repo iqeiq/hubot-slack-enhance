@@ -139,9 +139,10 @@ class Slack extends EventEmitter
       form: param
     options.form.token = process.env.HUBOT_SLACK_APPS_TOKEN
     request.post "https://slack.com/api/#{method}", options, (err, res, body)=>
-      return @robot.logger.error "#{inspect err, depth: null}" if err
-      return @robot.logger.error "#{inspect res, depth: null}" if res.statusCode != 200
-      @robot.logger.info "#{inspect res, depth: null}"
+      return @robot.logger.error "#{inspect err}" if err
+      return @robot.logger.error "#{inspect res}" if res.statusCode != 200
+      @robot.logger.info "#{inspect res}"
+      @robot.logger.info "#{inspect body}"
       cb body.ok, body
 
   getMessageFromTimestamp: (channel, ts, cb)->
