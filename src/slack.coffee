@@ -2,7 +2,10 @@
 {inspect} = require 'util'
 _ = require 'lodash'
 SlackBot = require.main.require 'hubot-slack/src/bot'
-{WebClient} = require '@slack/client'
+{WebClient, MemoryDataStore} = require '@slack/client'
+
+SLACK_CLIENT_OPTIONS =
+  dataStore: new MemoryDataStore()
 
 
 class Slack extends EventEmitter
@@ -11,7 +14,9 @@ class Slack extends EventEmitter
     @actionListener = {}
     @listen()
     @web = @robot.adapter.client.web
-    @web2 = WebClient process.env.HUBOT_SLACK_APPS_TOKEN, {}
+    opt = _.merge SLACK_CLIENT_OPTIONS,
+      token: process.env.HUBOT_SLACK_APPS_TOKEN
+    @web2 = WebClient opt.token, opt
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
