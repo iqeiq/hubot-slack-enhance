@@ -161,6 +161,7 @@ class Slack extends EventEmitter
         @robot.logger.error "#{inspect res, depth: null}"
         return cb err, null
       msg = res.messages[0]
+      @robot.logger.info "#{inspect msg, depth: null}"
       user = @robot.adapter.client.rtm.dataStore.getUserById msg.user
       msg.userName = user.name
       cb null, msg
