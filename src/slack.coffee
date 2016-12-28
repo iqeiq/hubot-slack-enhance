@@ -148,7 +148,7 @@ class Slack extends EventEmitter
       #@robot.logger.info "#{inspect json}"
       cb not json.ok, json
 
-  getMethodByChannel: (method, room)->
+  getMethodByChannel: (method, channel)->
     pre = switch channel.charAt 0
       when 'D' then 'im'
       when 'C' then 'channels'
