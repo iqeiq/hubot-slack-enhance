@@ -1,4 +1,5 @@
 {EventEmitter} = require 'events'
+util = require 'util'
 _ = require 'lodash'
 SlackBot = require.main.require 'hubot-slack/src/bot'
 
