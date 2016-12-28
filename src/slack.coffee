@@ -7,6 +7,7 @@ class Slack extends EventEmitter
   constructor: (@robot, options={})->
     @actionListener = {}
     @listen()
+    @web = @robot.adapter.client.web
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
@@ -66,11 +67,9 @@ class Slack extends EventEmitter
       return unless func
       idx = parseInt(content.attachment_id) - 1
       orig = content.original_message
-      #text = orig.attachments[idx - 1].text ? ""
-      ret = func content.user, content.actions[0], orig
+      ret = func content.user, content.actions[0], orig, content
       if ret
         # ボタンをクリック後に別のattachmentに置き変えるタイプ
-        # originalは、sendAttachmentで最終的にslackに送った全文っぽい
         # originalの中身のうち、attachmentを変えたものを送るとうまくいく
         orig.attachments[idx] = ret
         res.json orig
@@ -90,7 +89,7 @@ class Slack extends EventEmitter
       return unless req.body.event?
 
       ev = req.body.event
-      @robot.logger.debug "#{util.inspect ev, depth: null}"
+      @robot.logger.info "#{util.inspect ev, depth: null}"
       user = @robot.adapter.client.rtm.dataStore.getUserById ev.user
       item = ev.item
       channel = item.channel
@@ -100,9 +99,9 @@ class Slack extends EventEmitter
   interactiveMessagesListen: (callback_id, callback)->
     @actionListener[callback_id] = callback
 
-  generateChoice: (base, color, text, buttons, callback)->
+  generateChoice: (callback_id, color, text, buttons, callback)->
     timestamp = new Date().getTime()
-    cid = "#{base}_#{timestamp}"
+    cid = "#{callback_id}_#{timestamp}"
     # ボタンクリック時の動作を登録
     @interactiveMessagesListen cid, callback
     # 送信するためのattachmentを作る
@@ -116,7 +115,7 @@ class Slack extends EventEmitter
     options =
       unfurl_links: true
     options = _.extend options, extra
-    @robot.adapter.client.web.chat.postMessage room, message, options
+    @web.chat.postMessage room, message, options
 
   sendAttachment: (room, attachments, extra={})->
     options =
@@ -124,10 +123,10 @@ class Slack extends EventEmitter
       link_names: 1
       attachments: attachments
     options = _.extend options, extra
-    @robot.adapter.client.web.chat.postMessage room, '', options
+    @web.chat.postMessage room, '', options
 
   addReaction: (reaction, room, ts)->
-    @robot.adapter.client.web.reactions.add reaction,
+    @web.reactions.add reaction,
       timestamp: ts
       channel: room
 
