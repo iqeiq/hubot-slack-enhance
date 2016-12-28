@@ -111,11 +111,13 @@ class Slack extends EventEmitter
       at.actions.push @generateButton btn[0], btn[1], btn[2] ? "default"
     at
 
-  say: (room, message, extra={})->
+  say: (room, message, extra={}, cb=undefined)->
+    if cb is undefined and typeof extra is "function"
+      [cb, extra] = [extra, {}]
     options =
       unfurl_links: true
     options = _.extend options, extra
-    @web.chat.postMessage room, message, options
+    @web.chat.postMessage room, message, options, cb
 
   sendAttachment: (room, attachments, extra={})->
     options =
