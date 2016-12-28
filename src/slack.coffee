@@ -112,7 +112,7 @@ class Slack extends EventEmitter
     at
 
   say: (room, message, extra={}, cb=undefined)->
-    if cb is undefined and typeof extra is "function"
+    if cb is undefined and typeof(extra) == "function"
       [cb, extra] = [extra, {}]
     options =
       unfurl_links: true
