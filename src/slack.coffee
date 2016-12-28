@@ -10,6 +10,8 @@ class Slack extends EventEmitter
     @actionListener = {}
     @listen()
     @web = @robot.adapter.client.web
+    @self = @robot.adapter.client.rtm.dataStore.getUserByName @robot.name
+    console.log @self
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
@@ -160,5 +162,20 @@ class Slack extends EventEmitter
       user = @robot.adapter.client.rtm.dataStore.getUserById msg.user
       msg.userName = user.name
       cb null, msg
+
+  _deleteMessage: (channel, ts)->
+    @web.chat.delete ts, channel
+
+  deleteMessage: (channel, count)->
+    options =
+      channel: channel
+      count: count
+    @post 'channels.history', options, (err, res)=>
+      if err
+        @robot.logger.error "#{inspect res, depth: null}"
+        return cb err, null
+      for msg in res.messages
+        continue unless msg.user == @self.id
+        @_deleteMessage channel, msg.ts
 
 module.exports = Slack
