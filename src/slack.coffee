@@ -148,6 +148,14 @@ class Slack extends EventEmitter
       #@robot.logger.info "#{inspect json}"
       cb not json.ok, json
 
+  getMethodByChannel: (method, room)->
+    pre = switch channel.charAt 0
+      when 'D' then 'im'
+      when 'C' then 'channels'
+      when 'G' then 'groups'
+      else 'channels'
+    "#{pre}.#{method}"
+
   getMessageFromTimestamp: (channel, ts, cb)->
     options =
       channel: channel
@@ -155,8 +163,8 @@ class Slack extends EventEmitter
       oldest: ts
       inclusive: 1
       count: 1
-    method = if channel.charAt(0) == 'D' then 'im' else 'history'
-    @post "#{method}.history", options, (err, res)=>
+    method = getMethodByChannel 'history', channel
+    @post method, options, (err, res)=>
       if err
         @robot.logger.error "#{inspect res, depth: null}"
         return cb err, null
@@ -173,8 +181,8 @@ class Slack extends EventEmitter
     options =
       channel: channel
       count: count
-    method = if channel.charAt(0) == 'D' then 'im' else 'history'
-    @post "#{method}.history", options, (err, res)=>
+    method = getMethodByChannel 'history', channel
+    @post method, options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
       for msg in res.messages
         # as_userにしてないと、msg.bot_idになってしまう
