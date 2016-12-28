@@ -2,7 +2,7 @@
 {inspect} = require 'util'
 _ = require 'lodash'
 SlackBot = require.main.require 'hubot-slack/src/bot'
-{WebClient} = require.main.require '@slack/client'
+{WebClient} = require '@slack/client'
 
 
 class Slack extends EventEmitter
