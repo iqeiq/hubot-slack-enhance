@@ -120,6 +120,7 @@ class Slack extends EventEmitter
       [cb, extra] = [extra, {}]
     options =
       unfurl_links: true
+      as_user: true
     options = _.extend options, extra
     @web.chat.postMessage room, message, options, cb
 
@@ -173,6 +174,7 @@ class Slack extends EventEmitter
     @post 'channels.history', options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
       for msg in res.messages
+        # as_userにしてないと、msg.bot_idになってしまう
         continue unless msg.user == @self.id
         @_deleteMessage channel, msg.ts
 
