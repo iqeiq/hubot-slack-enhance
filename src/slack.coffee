@@ -142,8 +142,9 @@ class Slack extends EventEmitter
       return @robot.logger.error "#{inspect err}" if err
       return @robot.logger.error "#{inspect res}" if res.statusCode != 200
       @robot.logger.info "#{inspect res}"
-      @robot.logger.info "#{inspect body}"
-      cb body.ok, body
+      json = JSON.parse body
+      @robot.logger.info "#{inspect json}"
+      cb json.ok, json
 
   getMessageFromTimestamp: (channel, ts, cb)->
     options =
