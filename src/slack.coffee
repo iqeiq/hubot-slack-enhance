@@ -11,7 +11,7 @@ class Slack extends EventEmitter
     @actionListener = {}
     @listen()
     @web = @robot.adapter.client.web
-    @web2 = WebClient process.env.HUBOT_SLACK_APPS_TOKEN
+    @web2 = WebClient process.env.HUBOT_SLACK_APPS_TOKEN, {}
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
