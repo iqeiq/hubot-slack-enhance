@@ -155,7 +155,8 @@ class Slack extends EventEmitter
       oldest: ts
       inclusive: 1
       count: 1
-    @post 'channels.history', options, (err, res)=>
+    method = if channel.chatAt(0) == 'D' then 'im' else 'history'
+    @post "#{method}.history", options, (err, res)=>
       if err
         @robot.logger.error "#{inspect res, depth: null}"
         return cb err, null
@@ -171,7 +172,8 @@ class Slack extends EventEmitter
     options =
       channel: channel
       count: count
-    @post 'channels.history', options, (err, res)=>
+    method = if channel.chatAt(0) == 'D' then 'im' else 'history'
+    @post "#{method}.history", options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
       for msg in res.messages
         # as_userにしてないと、msg.bot_idになってしまう
