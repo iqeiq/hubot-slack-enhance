@@ -63,7 +63,7 @@ class Slack extends EventEmitter
       func = @actionListener[content.callback_id]
       # 存在しなければさようなら
       return unless func
-      idx = parseInt content.attachment_id
+      idx = parseInt(content.attachment_id) - 1
       orig = content.original_message
       #text = orig.attachments[idx - 1].text ? ""
       ret = func content.user, content.actions[0], orig
@@ -87,7 +87,7 @@ class Slack extends EventEmitter
         challenge = req.body.challenge
         return res.json challenge: challenge
       return unless req.body.event?
-      
+
       ev = req.body.event
       @robot.logger.debug "#{util.inspect ev, depth: null}"
       user = @robot.adapter.client.rtm.dataStore.getUserById ev.user
