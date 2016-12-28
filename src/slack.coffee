@@ -172,7 +172,7 @@ class Slack extends EventEmitter
     options =
       channel: channel
       count: count
-    method = if channel.chatAt(0) == 'D' then 'im' else 'history'
+    method = if channel.charAt(0) == 'D' then 'im' else 'history'
     @post "#{method}.history", options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
       for msg in res.messages
