@@ -171,9 +171,7 @@ class Slack extends EventEmitter
       channel: channel
       count: count
     @post 'channels.history', options, (err, res)=>
-      if err
-        @robot.logger.error "#{inspect res, depth: null}"
-        return cb err, null
+      return @robot.logger.error "#{inspect res, depth: null}" if err
       for msg in res.messages
         continue unless msg.user == @self.id
         @_deleteMessage channel, msg.ts
