@@ -144,7 +144,7 @@ class Slack extends EventEmitter
       cb body.ok, body
 
   getMessageFromTimestamp: (channel, ts, cb)->
-    options:
+    options = 
       channel: channel
       latest: ts
       oldest: ts
