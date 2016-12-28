@@ -141,7 +141,6 @@ class Slack extends EventEmitter
     request.post "https://slack.com/api/#{method}", options, (err, res, body)=>
       return @robot.logger.error "#{inspect err}" if err
       return @robot.logger.error "#{inspect res}" if res.statusCode != 200
-      @robot.logger.info "#{inspect res}"
       json = JSON.parse body
       @robot.logger.info "#{inspect json}"
       cb json.ok, json
@@ -157,7 +156,7 @@ class Slack extends EventEmitter
       if err
         @robot.logger.error "#{inspect res, depth: null}"
         return cb err, null
-      msg = res.message[0]
+      msg = res.messages[0]
       msg.userName = @robot.adapter.client.rtm.dataStore.getUserById msg.user
       cb null, msg
 
