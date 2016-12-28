@@ -141,6 +141,7 @@ class Slack extends EventEmitter
     request.post "https://slack.com/api/#{method}", options, (err, res, body)=>
       return @robot.logger.error "#{inspect err, depth: null}" if err
       return @robot.logger.error "#{inspect res, depth: null}" if res.statusCode != 200
+      @robot.logger.info "#{inspect res, depth: null}"
       cb body.ok, body
 
   getMessageFromTimestamp: (channel, ts, cb)->
