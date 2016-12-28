@@ -163,7 +163,7 @@ class Slack extends EventEmitter
       oldest: ts
       inclusive: 1
       count: 1
-    method = getMethodByChannel 'history', channel
+    method = @getMethodByChannel 'history', channel
     @post method, options, (err, res)=>
       if err
         @robot.logger.error "#{inspect res, depth: null}"
@@ -181,7 +181,7 @@ class Slack extends EventEmitter
     options =
       channel: channel
       count: count
-    method = getMethodByChannel 'history', channel
+    method = @getMethodByChannel 'history', channel
     @post method, options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
       for msg in res.messages
