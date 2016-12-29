@@ -124,14 +124,13 @@ class Slack extends EventEmitter
   interactiveMessagesListen: (callback_id, callback)->
     Slack.actionListener[callback_id] = callback
 
-  generateChoice: (callback_id, color, text, buttons, callback)->
+  generateChoice: (callback_id, color, buttons, option, callback)->
     timestamp = new Date().getTime()
     cid = "#{callback_id}_#{timestamp}"
     # ボタンクリック時の動作を登録
     @interactiveMessagesListen cid, callback
     # 送信するためのattachmentを作る
-    at = @generateActionAttachment color, cid,
-      text: text
+    at = @generateActionAttachment color, cid, option
     for btn in buttons
       at.actions.push @generateButton btn[0], btn[1], btn[2] ? "default"
     at
