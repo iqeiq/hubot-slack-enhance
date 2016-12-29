@@ -6,7 +6,7 @@ SlackBot = require.main.require 'hubot-slack/src/bot'
 
 class Slack extends EventEmitter
   @actionListener = {}
-  
+
   constructor: (@robot, options={})->
     # TODO: Event APIを使わない場合、などのオプションをつける
     @listen()
@@ -67,7 +67,7 @@ class Slack extends EventEmitter
       @robot.logger.warning 'HUBOT_SLACK_ATTACHMENT_ENDPOINT is `/slack/event-endpoint` by default.'
     HUBOT_SLACK_ATTACHMENT_ENDPOINT = process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT or '/slack/attachment-endpoint'
 
-    if @robot.router.routes.post.some((path)-> path == HUBOT_SLACK_ATTACHMENT_ENDPOINT)
+    if @robot.router.routes.post?.some((path)-> path == HUBOT_SLACK_ATTACHMENT_ENDPOINT)
       @robot.logger.warning "POST: #{HUBOT_SLACK_ATTACHMENT_ENDPOINT} is already registered."
       return
     # attachment用
@@ -96,7 +96,7 @@ class Slack extends EventEmitter
       @robot.logger.warning 'HUBOT_SLACK_EVENT_ENDPOINT is `/slack/event-endpoint` by default.'
     HUBOT_SLACK_EVENT_ENDPOINT = process.env.HUBOT_SLACK_EVENT_ENDPOINT or '/slack/event-endpoint'
 
-    if @robot.router.routes.post.some((path)-> path == HUBOT_SLACK_EVENT_ENDPOINT)
+    if @robot.router.routes.post?.some((path)-> path == HUBOT_SLACK_EVENT_ENDPOINT)
       @robot.logger.warning "POST: #{HUBOT_SLACK_EVENT_ENDPOINT} is already registered."
       return
     # EventAPI用
