@@ -61,16 +61,14 @@ class Slack extends EventEmitter
       dismiss_text: cancel
     _.extend option, extra
 
-  listen: ->
+  listenAttachment: ->
     unless process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT?
       @robot.logger.warning 'HUBOT_SLACK_ATTACHMENT_ENDPOINT is `/slack/event-endpoint` by default.'
-
-    unless process.env.HUBOT_SLACK_EVENT_ENDPOINT?
-      @robot.logger.warning 'HUBOT_SLACK_EVENT_ENDPOINT is `/slack/event-endpoint` by default.'
-
     HUBOT_SLACK_ATTACHMENT_ENDPOINT = process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT or '/slack/attachment-endpoint'
-    HUBOT_SLACK_EVENT_ENDPOINT = process.env.HUBOT_SLACK_EVENT_ENDPOINT or '/slack/event-endpoint'
 
+    if @robot.router.routes.post.some((path)-> path == HUBOT_SLACK_ATTACHMENT_ENDPOINT)
+      @robot.logger.warning "POST: #{HUBOT_SLACK_ATTACHMENT_ENDPOINT} is already registered."
+      return
     # attachment用
     @robot.router.post HUBOT_SLACK_ATTACHMENT_ENDPOINT, (req, res) =>
       content = JSON.parse req.body.payload
@@ -92,6 +90,14 @@ class Slack extends EventEmitter
         # ボタンクリックしたあとも残すタイプ
         res.end ""
 
+  listenEvent: ->
+    unless process.env.HUBOT_SLACK_EVENT_ENDPOINT?
+      @robot.logger.warning 'HUBOT_SLACK_EVENT_ENDPOINT is `/slack/event-endpoint` by default.'
+    HUBOT_SLACK_EVENT_ENDPOINT = process.env.HUBOT_SLACK_EVENT_ENDPOINT or '/slack/event-endpoint'
+
+    if @robot.router.routes.post.some((path)-> path == HUBOT_SLACK_EVENT_ENDPOINT)
+      @robot.logger.warning "POST: #{HUBOT_SLACK_EVENT_ENDPOINT} is already registered."
+      return
     # EventAPI用
     @robot.router.post HUBOT_SLACK_EVENT_ENDPOINT, (req, res) =>
       return unless req.body.token == process.env.HUBOT_SLACK_TOKEN_VERIFY
@@ -108,6 +114,11 @@ class Slack extends EventEmitter
       channel = item.channel
       @emit ev.type, ev, user, channel, item
       res.end ''
+
+
+  listen: ->
+    @listenAttachment()
+    @listenEvent()
 
   interactiveMessagesListen: (callback_id, callback)->
     @actionListener[callback_id] = callback
