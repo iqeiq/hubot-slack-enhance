@@ -133,13 +133,15 @@ class Slack extends EventEmitter
     options = _.extend options, extra
     @web.chat.postMessage room, message, options, cb
 
-  sendAttachment: (room, attachments, extra={})->
+  sendAttachment: (room, attachments, extra={}, cb=undefined)->
+    if cb is undefined and typeof(extra) == "function"
+      [cb, extra] = [extra, {}]
     options =
       as_user: true
       link_names: 1
       attachments: attachments
     options = _.extend options, extra
-    @web.chat.postMessage room, '', options
+    @web.chat.postMessage room, '', options, cb
 
   addReaction: (reaction, room, ts)->
     @web.reactions.add reaction,
