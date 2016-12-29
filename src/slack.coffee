@@ -62,13 +62,17 @@ class Slack extends EventEmitter
     _.extend option, extra
 
   listen: ->
-    unless (HUBOT_SLACK_ATTACHMENT_ENDPOINT = process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT)?
+    unless process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT?
       @robot.logger.warning 'HUBOT_SLACK_ATTACHMENT_ENDPOINT is `/slack/event-endpoint` by default.'
-      HUBOT_SLACK_ATTACHMENT_ENDPOINT = '/slack/attachment-endpoint'
-      return
+
+    unless process.env.HUBOT_SLACK_EVENT_ENDPOINT?
+      @robot.logger.warning 'HUBOT_SLACK_EVENT_ENDPOINT is `/slack/event-endpoint` by default.'
+
+    HUBOT_SLACK_ATTACHMENT_ENDPOINT = process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT or '/slack/attachment-endpoint'
+    HUBOT_SLACK_EVENT_ENDPOINT = process.env.HUBOT_SLACK_EVENT_ENDPOINT or '/slack/event-endpoint'
 
     # attachment用
-    @robot.router.post process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT, (req, res) =>
+    @robot.router.post HUBOT_SLACK_ATTACHMENT_ENDPOINT, (req, res) =>
       content = JSON.parse req.body.payload
       # callback_idで呼び出す関数を変える
       func = @actionListener[content.callback_id]
@@ -87,11 +91,6 @@ class Slack extends EventEmitter
       else
         # ボタンクリックしたあとも残すタイプ
         res.end ""
-
-    unless (HUBOT_SLACK_EVENT_ENDPOINT = process.env.HUBOT_SLACK_EVENT_ENDPOINT)?
-      @robot.logger.warning 'HUBOT_SLACK_EVENT_ENDPOINT is `/slack/event-endpoint` by default.'
-      HUBOT_SLACK_EVENT_ENDPOINT = '/slack/event-endpoint'
-      return
 
     # EventAPI用
     @robot.router.post HUBOT_SLACK_EVENT_ENDPOINT, (req, res) =>
