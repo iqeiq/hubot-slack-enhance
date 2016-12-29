@@ -62,8 +62,9 @@ class Slack extends EventEmitter
     _.extend option, extra
 
   listen: ->
-    unless process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT?
-      robot.logger.warning 'Required HUBOT_SLACK_ATTACHMENT_ENDPOINT environment.'
+    unless (HUBOT_SLACK_ATTACHMENT_ENDPOINT = process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT)?
+      @robot.logger.warning 'HUBOT_SLACK_ATTACHMENT_ENDPOINT is `/slack/event-endpoint` by default.'
+      HUBOT_SLACK_ATTACHMENT_ENDPOINT = '/slack/attachment-endpoint'
       return
 
     # attachment用
@@ -87,16 +88,13 @@ class Slack extends EventEmitter
         # ボタンクリックしたあとも残すタイプ
         res.end ""
 
-    unless process.env.HUBOT_SLACK_EVENT_ENDPOINT?
-      robot.logger.warning 'Required HUBOT_SLACK_EVENT_ENDPOINT environment.'
-      return
-
-    unless process.env.HUBOT_SLACK_TOKEN_VERIFY?
-      robot.logger.warning 'Required HUBOT_SLACK_TOKEN_VERIFY environment.'
+    unless (HUBOT_SLACK_EVENT_ENDPOINT = process.env.HUBOT_SLACK_EVENT_ENDPOINT)?
+      @robot.logger.warning 'HUBOT_SLACK_EVENT_ENDPOINT is `/slack/event-endpoint` by default.'
+      HUBOT_SLACK_EVENT_ENDPOINT = '/slack/event-endpoint'
       return
 
     # EventAPI用
-    @robot.router.post process.env.HUBOT_SLACK_EVENT_ENDPOINT, (req, res) =>
+    @robot.router.post HUBOT_SLACK_EVENT_ENDPOINT, (req, res) =>
       return unless req.body.token == process.env.HUBOT_SLACK_TOKEN_VERIFY
       if req.body.challenge?
         # Verify
@@ -150,11 +148,6 @@ class Slack extends EventEmitter
       channel: room
 
   post: (method, param, cb)->
-
-    unless process.env.HUBOT_SLACK_APPS_TOKEN?
-      robot.logger.warning 'Required HUBOT_SLACK_APPS_TOKEN environment.'
-      return
-
     options =
       form: param
     options.form.token = process.env.HUBOT_SLACK_APPS_TOKEN
