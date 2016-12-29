@@ -9,10 +9,9 @@ class Slack extends EventEmitter
 
   constructor: (@robot, options={})->
     # TODO: Event APIを使わない場合、などのオプションをつける
-    @listen()
     @web = @robot.adapter.client.web
     @self = @robot.adapter.client.rtm.dataStore.getUserByName @robot.name
-    console.log @self
+    @listen()
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
@@ -118,7 +117,7 @@ class Slack extends EventEmitter
 
 
   listen: ->
-    console.log @robot.router.routes.post
+    console.log @robot.router.routes
     @listenAttachment()
     @listenEvent()
 
