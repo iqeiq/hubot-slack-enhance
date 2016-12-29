@@ -74,7 +74,7 @@ class Slack extends EventEmitter
     @robot.router.post HUBOT_SLACK_ATTACHMENT_ENDPOINT, (req, res) =>
       content = JSON.parse req.body.payload
       # callback_idで呼び出す関数を変える
-      func = @actionListener[content.callback_id]
+      func = Slack.actionListener[content.callback_id]
       # 存在しなければさようなら
       return unless func
       idx = parseInt(content.attachment_id) - 1
@@ -86,7 +86,7 @@ class Slack extends EventEmitter
         orig.attachments[idx] = ret
         res.json orig
         # お役御免
-        delete @actionListener[content.callback_id]
+        delete Slack.actionListener[content.callback_id]
       else
         # ボタンクリックしたあとも残すタイプ
         res.end ""
@@ -118,11 +118,12 @@ class Slack extends EventEmitter
 
 
   listen: ->
+    console.log @robot.router.routes.post
     @listenAttachment()
     @listenEvent()
 
   interactiveMessagesListen: (callback_id, callback)->
-    @actionListener[callback_id] = callback
+    Slack.actionListener[callback_id] = callback
 
   generateChoice: (callback_id, color, text, buttons, callback)->
     timestamp = new Date().getTime()
