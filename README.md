@@ -8,11 +8,13 @@ Add functions for hubot-slack
 
 ## ENV
 
-* `HUBOT_SLACK_VERIFY`: required (when use Event Subscriptions)
-* `HUBOT_SLACK_EVENT_ENDPOINT`: required (when use Event Subscriptions)
-* `HUBOT_SLACK_ATTACHMENT_ENDPOINT`: required (when use Interactive Messages)
-* `HUBOT_SLACK_APPS_TOKEN`: required (when use APIs Apps-Bot cannot call)
- 
+Env                               | Description                   | Required | Default
+--------------------------------- | ----------------------------- | -------- | ---------------------------
+`HUBOT_SLACK_VERIFY`              | use Event Subscriptions       | required | (empty)
+`HUBOT_SLACK_EVENT_ENDPOINT`      | use Event Subscriptions       |          | `/slack/event-endpoint`
+`HUBOT_SLACK_ATTACHMENT_ENDPOINT` | use Interactive Messages      |          | `slack/attachment-endpoint`
+`HUBOT_SLACK_APPS_TOKEN`          | use APIs Apps-Bot cannot call | required | (empty)
+
 ## Sample
 
 ```coffee
@@ -21,11 +23,11 @@ Slack = require 'hubot-slack-enhance'
 module.exports = (robot)->
   return unless Slack.isSlackAdapter robot
   slack = new Slack robot
-  
+
   robot.hear /apple/i, (res)->
     mes = res.envelope.message
     slack.addReaction 'apple', mes.room, mes.id
-  
+
   slack.on 'star_added', (ev, user, channel, item)->
     return if user.name == robot.name
     link = item.message.permalink
