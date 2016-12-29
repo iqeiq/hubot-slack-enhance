@@ -5,9 +5,10 @@ request = require 'request'
 SlackBot = require.main.require 'hubot-slack/src/bot'
 
 class Slack extends EventEmitter
+  @actionListener = {}
+  
   constructor: (@robot, options={})->
     # TODO: Event APIを使わない場合、などのオプションをつける
-    @actionListener = {}
     @listen()
     @web = @robot.adapter.client.web
     @self = @robot.adapter.client.rtm.dataStore.getUserByName @robot.name
