@@ -241,16 +241,19 @@ class Slack extends EventEmitter
   _deleteMessage: (channel, ts)->
     @web.chat.delete ts, channel
 
-  deleteMessage: (channel, count)->
+  deleteMessage: (channel, count, cb)->
     options =
       channel: channel
       count: count
     method = @getMethodByChannel channel, 'history'
     @post method, options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
+      cnt = 0
       for msg in res.messages
         # as_userにしてないと、msg.bot_idになってしまう
         continue unless msg.user == @self.id
         @_deleteMessage channel, msg.ts
+        cnt += 1
+      cb cnt if cb
 
 module.exports = Slack
