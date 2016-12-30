@@ -14,6 +14,7 @@ class Slack extends EventEmitter
     defaults =
       event: true
       interactive: true
+      slash: true
     options = _.extend defaults, options
     @listen options
 
@@ -119,11 +120,29 @@ class Slack extends EventEmitter
       @emit ev.type, ev, user, channel, item
       res.end ''
 
+  listenSlash: ->
+    unless process.env.HUBOT_SLACK_SLASH_ENDPOINT?
+      @robot.logger.warning 'HUBOT_SLACK_SLASH_ENDPOINT is `/slack/slash/:command` by default.'
+    HUBOT_SLACK_SLASH_ENDPOINT = process.env.HUBOT_SLACK_SLASH_ENDPOINT or '/slack/slash/:command'
+
+    if @robot.router.routes.post?.some((p)-> p.path == HUBOT_SLACK_SLASH_ENDPOINT)
+      @robot.logger.warning "POST: #{HUBOT_SLACK_SLASH_ENDPOINT} is already registered."
+      return
+
+    @robot.router.post HUBOT_SLACK_SLASH_ENDPOINT, (req, res) =>
+      return unless req.body.token == process.env.HUBOT_SLACK_TOKEN_VERIFY
+      if req.body.challenge?
+        # Verify
+        challenge = req.body.challenge
+        return res.json challenge: challenge
+      console.log req.body
+      res.end req.params.command
 
   listen: (options)->
     #console.log @robot.router.routes
     @listenInteractive() if options.interactive
     @listenEvent() if options.event
+    @listenSlash() if options.slash
 
   interactiveMessagesListen: (callback_id, callback)->
     Slack.actionListener[callback_id] = callback
@@ -174,7 +193,7 @@ class Slack extends EventEmitter
       #@robot.logger.info "#{inspect json}"
       cb not json.ok, json
 
-  getMethodByChannel: (method, channel)->
+  getMethodByChannel: (channel, method)->
     pre = switch channel.charAt 0
       when 'D' then 'im'
       when 'C' then 'channels'
@@ -189,7 +208,7 @@ class Slack extends EventEmitter
       oldest: ts
       inclusive: 1
       count: 1
-    method = @getMethodByChannel 'history', channel
+    method = @getMethodByChannel channel, 'history'
     @post method, options, (err, res)=>
       if err
         @robot.logger.error "#{inspect res, depth: null}"
@@ -207,7 +226,7 @@ class Slack extends EventEmitter
     options =
       channel: channel
       count: count
-    method = @getMethodByChannel 'history', channel
+    method = @getMethodByChannel channel, 'history'
     @post method, options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
       for msg in res.messages
