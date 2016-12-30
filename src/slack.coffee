@@ -11,7 +11,11 @@ class Slack extends EventEmitter
     # TODO: Event APIを使わない場合、などのオプションをつける
     @web = @robot.adapter.client.web
     @self = @robot.adapter.client.rtm.dataStore.getUserByName @robot.name
-    @listen()
+    defaults =
+      event: true
+      interactive: true
+    options = _.extend defaults, options
+    @listen options
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
@@ -61,16 +65,16 @@ class Slack extends EventEmitter
       dismiss_text: cancel
     _.extend option, extra
 
-  listenAttachment: ->
-    unless process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT?
-      @robot.logger.warning 'HUBOT_SLACK_ATTACHMENT_ENDPOINT is `/slack/event-endpoint` by default.'
-    HUBOT_SLACK_ATTACHMENT_ENDPOINT = process.env.HUBOT_SLACK_ATTACHMENT_ENDPOINT or '/slack/attachment-endpoint'
+  listenInteractive: ->
+    unless process.env.HUBOT_SLACK_INTERACTIVE_ENDPOINT?
+      @robot.logger.warning 'HUBOT_SLACK_INTERACTIVE_ENDPOINT is `/slack/interactive-endpoint` by default.'
+    HUBOT_SLACK_INTERACTIVE_ENDPOINT = process.env.HUBOT_SLACK_INTERACTIVE_ENDPOINT or '/slack/interactive-endpoint'
 
-    if @robot.router.routes.post?.some((p)-> p.path == HUBOT_SLACK_ATTACHMENT_ENDPOINT)
-      @robot.logger.warning "POST: #{HUBOT_SLACK_ATTACHMENT_ENDPOINT} is already registered."
+    if @robot.router.routes.post?.some((p)-> p.path == HUBOT_SLACK_INTERACTIVE_ENDPOINT)
+      @robot.logger.warning "POST: #{HUBOT_SLACK_INTERACTIVE_ENDPOINT} is already registered."
       return
-    # attachment用
-    @robot.router.post HUBOT_SLACK_ATTACHMENT_ENDPOINT, (req, res) =>
+    # interactive用
+    @robot.router.post HUBOT_SLACK_INTERACTIVE_ENDPOINT, (req, res) =>
       content = JSON.parse req.body.payload
       # callback_idで呼び出す関数を変える
       func = Slack.actionListener[content.callback_id]
@@ -116,10 +120,10 @@ class Slack extends EventEmitter
       res.end ''
 
 
-  listen: ->
+  listen: (optiions)->
     #console.log @robot.router.routes
-    @listenAttachment()
-    @listenEvent()
+    @listenInteractive() if options.interactive
+    @listenEvent() if options.event
 
   interactiveMessagesListen: (callback_id, callback)->
     Slack.actionListener[callback_id] = callback
