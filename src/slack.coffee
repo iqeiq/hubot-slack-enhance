@@ -251,7 +251,12 @@ class Slack extends EventEmitter
       cnt = 0
       for msg in res.messages
         # as_userにしてないと、msg.bot_idになってしまう
-        continue unless msg.user == @self.id
+        if msg.user?
+          continue unless msg.user == @self.id
+        else if msg.bot_id?
+          continue unless msg.bot_id == @self.profile.bot_id
+        else
+          continue
         @_deleteMessage channel, msg.ts
         cnt += 1
       cb cnt if cb
