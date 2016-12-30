@@ -129,14 +129,23 @@ class Slack extends EventEmitter
       @robot.logger.warning "POST: #{HUBOT_SLACK_SLASH_ENDPOINT} is already registered."
       return
 
+    @slash = new EventEmitter()
     @robot.router.post HUBOT_SLACK_SLASH_ENDPOINT, (req, res) =>
       return unless req.body.token == process.env.HUBOT_SLACK_TOKEN_VERIFY
       if req.body.challenge?
         # Verify
         challenge = req.body.challenge
         return res.json challenge: challenge
-      console.log req.body
-      res.end req.params.command
+      ret = @slash.emit req.params.command,
+        text: req.body.text
+        user:
+          id: req.body.user_id
+          name: req.body.user_name
+        channel:
+          id: req.body.channel_id
+          name: req.body.channel_name
+        command: req.body.command
+      res.end ret ? ''
 
   listen: (options)->
     #console.log @robot.router.routes
