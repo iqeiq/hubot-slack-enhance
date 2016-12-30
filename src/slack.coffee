@@ -136,7 +136,8 @@ class Slack extends EventEmitter
         # Verify
         challenge = req.body.challenge
         return res.json challenge: challenge
-      ret = @slash.emit req.params.command,
+
+      option =
         text: req.body.text
         user:
           id: req.body.user_id
@@ -145,7 +146,16 @@ class Slack extends EventEmitter
           id: req.body.channel_id
           name: req.body.channel_name
         command: req.body.command
-      res.end ret ? ''
+
+      ret = @slash.emit req.params.command, option, (text, extra={})->
+        options =
+          text: text
+          unfurl_links: true
+          as_user: true
+        options = _.extend options, extra
+        res.json options
+
+      res.end 'no such a command' unless ret
 
   listen: (options)->
     #console.log @robot.router.routes

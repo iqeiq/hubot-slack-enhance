@@ -12,7 +12,8 @@ Env                               | Description                   | Required | D
 --------------------------------- | ----------------------------- | -------- | ---------------------------
 `HUBOT_SLACK_VERIFY`              | use Event Subscriptions       | required | (empty)
 `HUBOT_SLACK_EVENT_ENDPOINT`      | use Event Subscriptions       |          | `/slack/event-endpoint`
-`HUBOT_SLACK_INTERACTIVE_ENDPOINT` | use Interactive Messages      |          | `slack/interactive-endpoint`
+HUBOT_SLACK_SLASH_ENDPOINT`       | use Slash Commands            |          | `/slack/slash/:command`
+`HUBOT_SLACK_INTERACTIVE_ENDPOINT` | use Interactive Messages      |          | `/slack/interactive-endpoint`
 `HUBOT_SLACK_APPS_TOKEN`          | use APIs Apps-Bot cannot call | required | (empty)
 
 ## Sample
