@@ -120,7 +120,7 @@ class Slack extends EventEmitter
       res.end ''
 
 
-  listen: (optiions)->
+  listen: (options)->
     #console.log @robot.router.routes
     @listenInteractive() if options.interactive
     @listenEvent() if options.event
