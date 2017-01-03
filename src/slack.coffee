@@ -160,6 +160,7 @@ class Slack extends EventEmitter
         command: req.body.command
 
       ret = @slash.emit req.params.command, option, (text, extra={})->
+        [text, extra] = ['', text] unless (typeof text) is "string"
         options =
           text: text
           unfurl_links: true
