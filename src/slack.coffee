@@ -274,17 +274,15 @@ class Slack extends EventEmitter
       cb cnt if cb
 
   __deleteMessage: (channel, count, cb)->
-    options =
-      channel: channel
-      count: count
+    options = channel: channel, count: count
     method = @getMethodByChannel channel, 'history'
     @post method, options, (err, res)=>
       return @robot.logger.error "#{inspect res, depth: null}" if err
+      @robot.logger.info "get #{res.messages.length} messages"
       cnt = 0
-      method2 = @getMethodByChannel channel, 'delete'
       for msg in res.messages
         opt = channel: channel, ts: msg.ts
-        @post method2, opt, (err, res)->
+        @post 'chat.delete', opt, (err, res)->
           cnt += 1 unless err
       cb cnt if cb
 
