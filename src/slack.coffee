@@ -9,8 +9,11 @@ class Slack extends EventEmitter
 
   constructor: (@robot, options={})->
     unless options.__from_get_instance?
+      # constructorで例外飛ばすの良くない？
+      # Unanble to load /path/to/scripts/hoge: undefinedとだけエラーが出る
+      # hubot-script読み込み時の例外は仕様的にキャッチできない？
       throw "should be instanced by getInstance()"
-    console.log "debug"
+    @robot.logger.info "slack-enhance-instanced"
     # TODO: Event APIを使わない場合、などのオプションをつける
     @web = @robot.adapter.client.web
     @self = @robot.adapter.client.rtm.dataStore.getUserByName @robot.name
@@ -24,7 +27,8 @@ class Slack extends EventEmitter
   @getInstance = do ->
     _instance = undefined
     flag = __from_get_instance: true
-    (robot, options={})-> _instance ?= new Slack robot, _.extend options, flag
+    (robot, options)->
+      _instance ?= new Slack robot, _.extend options ? {}, flag
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
