@@ -8,6 +8,9 @@ class Slack extends EventEmitter
   @actionListener = {}
 
   constructor: (@robot, options={})->
+    unless options.__from_get_instance?
+      throw "should be instanced by getInstance()"
+    console.log "debug"
     # TODO: Event APIを使わない場合、などのオプションをつける
     @web = @robot.adapter.client.web
     @self = @robot.adapter.client.rtm.dataStore.getUserByName @robot.name
@@ -17,6 +20,11 @@ class Slack extends EventEmitter
       slash: true
     options = _.extend defaults, options
     @listen options
+
+  @getInstance = do ->
+    _instance = undefined
+    flag = __from_get_instance: true
+    (robot, options={})-> _instance ?= new Slack robot, _.extend options, flag
 
   @isSlackAdapter = (robot)->
     robot.adapter instanceof SlackBot
