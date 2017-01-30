@@ -128,7 +128,7 @@ class Slack extends EventEmitter
       @robot.logger.info "#{inspect ev, depth: null}"
       user = @robot.adapter.client.rtm.dataStore.getUserById ev.user
       item = ev.item
-      channel = item.channel
+      channel = if ev.channel? then ev.channel else item.channel
       @emit ev.type, ev, user, channel, item
       res.end ''
 
