@@ -287,4 +287,12 @@ class Slack extends EventEmitter
           cnt += 1 unless err
       cb cnt if cb
 
+  plainTextUpload: (filename, title, text, channel, cb)->
+    options =
+      filename: filename
+      content: text
+      title: title
+    options.channels = channel if channel?
+    @web.files.upload filename, options, cb
+
 module.exports = Slack

@@ -27,6 +27,7 @@
     "coffee-script": "^1.12.2"
   },
   "dependencies": {
+    "coffee-script": "^1.12.2",
     "lodash": "^4.17.3",
     "request": "^2.79.0"
   }
